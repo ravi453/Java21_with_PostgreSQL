@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+    <info organisation="com.example" module="credentials" />
+    <configurations>
+        <conf name="compile" description="Dependencies needed to compile the application" />
+        <conf name="runtime" extends="compile" description="Dependencies needed to run the application" />
+        <conf name="default" extends="runtime" description="Default dependency set" />
+    </configurations>
+    <dependencies>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-web" rev="3.4.0" conf="compile->default" />
+        <dependency org="org.springframework.boot" name="spring-boot-starter-data-jpa" rev="3.4.0" conf="compile->default" />
+        <dependency org="org.postgresql" name="postgresql" rev="42.7.4" conf="runtime->default" />
+    </dependencies>
+</ivy-module>

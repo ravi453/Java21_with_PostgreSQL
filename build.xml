@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="credentials" default="compile" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+    <property name="src.dir" value="src/main/java" />
+    <property name="resources.dir" value="src/main/resources" />
+    <property name="build.dir" value="build" />
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="lib.dir" value="${build.dir}/lib" />
+    <property name="ivy.jar" value="${build.dir}/ivy/ivy-2.5.3.jar" />
+    <property name="main.class" value="com.example.credentials.CredentialsApplication" />
+
+    <target name="bootstrap-ivy">
+        <mkdir dir="${build.dir}/ivy" />
+        <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/2.5.3/ivy-2.5.3.jar"
+             dest="${ivy.jar}" usetimestamp="true" />
+        <taskdef uri="antlib:org.apache.ivy.ant"
+                 resource="org/apache/ivy/ant/antlib.xml" classpath="${ivy.jar}" />
+    </target>
+
+    <target name="resolve" depends="bootstrap-ivy" description="Resolve and retrieve Ivy dependencies">
+        <ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[revision](-[classifier]).[ext]"
+                      conf="compile,runtime" />
+    </target>
+
+    <target name="compile" depends="resolve" description="Compile application sources with Java 21">
+        <mkdir dir="${classes.dir}" />
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" release="21"
+               encoding="UTF-8" includeantruntime="false">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="compile/**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${resources.dir}" />
+        </copy>
+    </target>
+
+    <target name="run" depends="compile" description="Start the Credentials Spring Boot application">
+        <java classname="${main.class}" fork="true" failonerror="true">
+            <classpath>
+                <pathelement location="${classes.dir}" />
+                <fileset dir="${lib.dir}">
+                    <include name="compile/**/*.jar" />
+                    <include name="runtime/**/*.jar" />
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="clean" description="Remove generated build output and retrieved dependencies">
+        <delete dir="${build.dir}" />
+    </target>
+</project>
